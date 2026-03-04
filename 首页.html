@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古馆藏医韵，古建承文脉——中国古代中医馆文化展</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SimHei", "Microsoft YaHei", serif;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .page-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            /* 留白区域的背景色：选用国风浅米色，贴合中医馆主题 */
+            background-color: #f5f2e9;
+        }
+
+        .top-nav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 0;
+            background-color: #f9d71c;
+            z-index: 100;
+            text-align: center;
+        }
+
+        .top-nav a {
+            text-decoration: none;
+            color: #8b3f00;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 20px;
+        }
+
+        .main-carousel {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 方案2核心：完整显示图片，不裁剪 */
+        .carousel-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            /* 关键属性：完整显示图片，不裁剪 */
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* 留白区域和页面背景色统一，视觉更协调 */
+            background-color: transparent;
+            /* 轻微锐化，改善图片模糊感 */
+            filter: contrast(1.05) brightness(1.02);
+        }
+
+        .carousel-item.active {
+            opacity: 1;
+        }
+
+        /* 相对路径引用图片 */
+        .carousel-item.item1 {
+            background-image: url("images/太医署.jpg");
+        }
+        .carousel-item.item2 {
+            background-image: url("images/宋代药铺.jpg");
+        }
+        .carousel-item.item3 {
+            background-image: url("images/江南药堂.jpg");
+        }
+
+        .carousel-title {
+            color: #8b3f00;
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            padding: 30px 50px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid #f9d71c;
+            border-radius: 8px;
+            z-index: 10;
+            position: relative;
+            /* 标语位置上移，避开图片下方区域 */
+            margin-bottom: 80px;
+        }
+
+        .bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 0;
+            background-color: #f9d71c;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #8b3f00;
+            font-weight: bold;
+        }
+
+        .bottom-bar .quick-entry {
+            padding-left: 20px;
+            font-size: 16px;
+        }
+
+        .bottom-bar .ai-function {
+            padding-right: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="top-nav">
+            <a href="#">首页</a>
+            <a href="#">溯源·历代医馆</a>
+            <a href="#">分脉·医筑谱系</a>
+            <a href="#">匠心·营造名家</a>
+            <a href="#">典藏·匠籍博览</a>
+        </div>
+
+        <div class="main-carousel">
+            <div class="carousel-item item1 active">
+                <div class="carousel-title">
+                    古馆藏医韵，古建承文脉<br>——中国古代中医馆文化展
+                </div>
+            </div>
+            <div class="carousel-item item2">
+                <div class="carousel-title">
+                    古馆藏医韵，古建承文脉<br>——中国古代中医馆文化展
+                </div>
+            </div>
+            <div class="carousel-item item3">
+                <div class="carousel-title">
+                    古馆藏医韵，古建承文脉<br>——中国古代中医馆文化展
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-bar">
+            <div class="quick-entry">特色功能快速入口</div>
+            <div class="ai-function">AI讲解问答</div>
+        </div>
+    </div>
+
+    <script>
+        const items = document.querySelectorAll('.carousel-item');
+        let current = 0;
+        setInterval(() => {
+            items[current].classList.remove('active');
+            current = (current + 1) % items.length;
+            items[current].classList.add('active');
+        }, 5000);
+    </script>
+</body>
+</html>

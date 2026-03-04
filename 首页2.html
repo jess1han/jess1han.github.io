@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古馆藏医韵，古建承文脉——中国古代中医馆文化展</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SimHei", "Microsoft YaHei", serif;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .page-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f2e9;
+        }
+
+        /* 顶部导航栏 */
+        .top-nav {
+            background-color: #f9d71c;
+            padding: 15px 0;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .top-nav a {
+            text-decoration: none;
+            color: #8b3f00;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 20px;
+            transition: all 0.3s ease;
+        }
+
+        .top-nav a:hover {
+            color: #c8102e;
+            text-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        /* 标题模块 */
+        .title-module {
+            padding: 20px 0;
+            text-align: center;
+            background-color: rgba(245, 242, 233, 0.9);
+            border-bottom: 3px solid #f9d71c;
+        }
+
+        .title-main {
+            font-size: 36px;
+            color: #8b3f00;
+            font-weight: bold;
+            letter-spacing: 6px;
+        }
+
+        .title-sub {
+            font-size: 18px;
+            color: #5a2e00;
+            margin-top: 8px;
+            letter-spacing: 3px;
+        }
+
+        /* 轮播区（核心重构：单张显隐） */
+        .carousel-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 每张轮播图绝对定位，重叠放置 */
+        .carousel-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* 默认隐藏 */
+            transition: opacity 1.2s ease-in-out; /* 淡入淡出切换 */
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: contrast(1.05) brightness(1.02);
+        }
+
+        /* 只有active的图片显示 */
+        .carousel-item.active {
+            opacity: 1;
+        }
+
+        .carousel-item.item1 {
+            background-image: url("images/太医署.jpg");
+        }
+        .carousel-item.item2 {
+            background-image: url("images/宋代药铺.jpg");
+        }
+        .carousel-item.item3 {
+            background-image: url("images/江南药堂.jpg");
+        }
+
+        /* 手动切换按钮 */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0,0,0,0.5);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .carousel-btn:hover {
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .carousel-btn.prev {
+            left: 20px;
+        }
+
+        .carousel-btn.next {
+            right: 20px;
+        }
+
+        /* 轮播指示器 */
+        .carousel-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background-color: #f9d71c;
+        }
+
+        /* 底部功能区 */
+        .bottom-bar {
+            background-color: #f9d71c;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #8b3f00;
+            font-weight: bold;
+            z-index: 100;
+        }
+
+        .bottom-bar .quick-entry {
+            padding-left: 20px;
+            font-size: 16px;
+        }
+
+        .bottom-bar .ai-function {
+            padding-right: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- 顶部导航 -->
+        <div class="top-nav">
+            <a href="#">首页</a>
+            <a href="#">溯源·历代医馆</a>
+            <a href="#">分脉·医筑谱系</a>
+            <a href="#">匠心·营造名家</a>
+            <a href="#">典藏·匠籍博览</a>
+        </div>
+
+        <!-- 标题模块 -->
+        <div class="title-module">
+            <div class="title-main">古馆藏医韵，古建承文脉</div>
+            <div class="title-sub">——中国古代中医馆文化展</div>
+        </div>
+
+        <!-- 轮播区（重构后） -->
+        <div class="carousel-wrapper">
+            <!-- 三张图重叠放置，默认只显示第一张 -->
+            <div class="carousel-item item1 active"></div>
+            <div class="carousel-item item2"></div>
+            <div class="carousel-item item3"></div>
+
+            <!-- 手动切换按钮 -->
+            <button class="carousel-btn prev" id="prevBtn">&lt;</button>
+            <button class="carousel-btn next" id="nextBtn">&gt;</button>
+
+            <!-- 指示器 -->
+            <div class="carousel-indicators" id="indicators">
+                <span class="indicator active" data-index="0"></span>
+                <span class="indicator" data-index="1"></span>
+                <span class="indicator" data-index="2"></span>
+            </div>
+        </div>
+
+        <!-- 底部功能区 -->
+        <div class="bottom-bar">
+            <div class="quick-entry">特色功能快速入口</div>
+            <div class="ai-function">AI讲解问答</div>
+        </div>
+    </div>
+
+    <script>
+        // 核心变量（极简，避免复杂逻辑）
+        const items = document.querySelectorAll('.carousel-item');
+        const indicators = document.querySelectorAll('.indicator');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentIndex = 0; // 初始索引固定为0
+        const total = items.length; // 自动获取图片数量，避免写死
+        let autoTimer = null;
+
+        // 核心方法：切换到指定索引（唯一逻辑入口）
+        function switchToIndex(targetIndex) {
+            // 1. 清除所有active状态
+            items.forEach(item => item.classList.remove('active'));
+            indicators.forEach(ind => ind.classList.remove('active'));
+
+            // 2. 给目标索引添加active
+            items[targetIndex].classList.add('active');
+            indicators[targetIndex].classList.add('active');
+
+            // 3. 更新当前索引
+            currentIndex = targetIndex;
+        }
+
+        // 下一张（单步递增，循环）
+        function next() {
+            let nextIndex = currentIndex + 1;
+            if (nextIndex >= total) nextIndex = 0; // 到最后一张则回到第一张
+            switchToIndex(nextIndex);
+        }
+
+        // 上一张（单步递减，循环）
+        function prev() {
+            let prevIndex = currentIndex - 1;
+            if (prevIndex < 0) prevIndex = total - 1; // 到第一张则回到最后一张
+            switchToIndex(prevIndex);
+        }
+
+        // 启动自动播放（5秒切换一次）
+        function startAuto() {
+            autoTimer = setInterval(next, 5000);
+        }
+
+        // 重置自动播放（手动操作后重新计时）
+        function resetAuto() {
+            clearInterval(autoTimer);
+            startAuto();
+        }
+
+        // 绑定事件（极简逻辑，无冗余）
+        prevBtn.onclick = () => {
+            prev();
+            resetAuto();
+        };
+
+        nextBtn.onclick = () => {
+            next();
+            resetAuto();
+        };
+
+        indicators.forEach((ind, index) => {
+            ind.onclick = () => {
+                switchToIndex(index);
+                resetAuto();
+            };
+        });
+
+        // 页面加载后启动自动播放
+        window.onload = startAuto;
+    </script>
+</body>
+</html>

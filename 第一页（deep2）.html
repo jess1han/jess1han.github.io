@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经纬医馆 · 历代医馆</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8f3eb;
+            color: #3e362e;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        /* 导航栏 (与首页一致，保持统一) */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 4rem;
+            background: rgba(248, 243, 235, 0.95);
+            border-bottom: 1px solid #d9c9b7;
+            flex-shrink: 0;
+        }
+        .logo {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #6b4f3c;
+        }
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #4d3e32;
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-links a.active {
+            border-bottom-color: #b1886b;
+        }
+        .nav-tools {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .nav-tools i {
+            font-size: 1.3rem;
+            color: #6b4f3c;
+            cursor: pointer;
+        }
+        /* 主体：左侧时间轴 + 右侧内容 */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        /* 左侧垂直时间轴 */
+        .timeline-sidebar {
+            width: 180px;
+            background: #e3d6c8;
+            border-right: 2px solid #b1886b;
+            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .timeline-item {
+            width: 100%;
+            text-align: center;
+            padding: 0.8rem 0;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #5f4a38;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: 0.2s;
+        }
+        .timeline-item:hover {
+            background: #d9c9b7;
+        }
+        .timeline-item.active {
+            border-left-color: #b1886b;
+            background: #cfbeaa;
+            color: #2f241b;
+        }
+        /* 右侧朝代详情区域 */
+        .dynasty-detail {
+            flex: 1;
+            padding: 2rem 4rem;
+            overflow-y: auto;
+            background: #f8f3eb;
+            position: relative;
+        }
+        /* 朝代头部 */
+        .dynasty-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #d9c9b7;
+            padding-bottom: 1rem;
+        }
+        .dynasty-name {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #4a3729;
+            line-height: 1;
+        }
+        .dynasty-sub {
+            font-size: 1.8rem;
+            color: #705c4b;
+            border-left: 3px solid #b1886b;
+            padding-left: 1.5rem;
+        }
+        .dynasty-period {
+            margin-left: auto;
+            font-size: 1.2rem;
+            background: #e3d6c8;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+        }
+        /* 图片与文字双栏 */
+        .dynasty-row {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 2.5rem;
+        }
+        .image-area {
+            flex: 1.2;
+            background: #ddd2c4;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            aspect-ratio: 4 / 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .image-caption {
+            background: rgba(50,35,25,0.7);
+            color: #f0e2d4;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            backdrop-filter: blur(3px);
+        }
+        .text-area {
+            flex: 1;
+            background: rgba(255,250,240,0.7);
+            backdrop-filter: blur(3px);
+            padding: 2rem;
+            border-radius: 30px;
+            border: 1px solid #e5d5c5;
+        }
+        .feature-list {
+            list-style: none;
+        }
+        .feature-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .feature-list i {
+            color: #b1886b;
+            font-size: 1.2rem;
+            min-width: 1.5rem;
+        }
+        /* 人物浮签 */
+        .figures {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px dashed #d9c9b7;
+        }
+        .figure-badge {
+            background: #f5efe7;
+            border-radius: 40px;
+            padding: 0.6rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            border: 1px solid #b1886b;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.1rem;
+        }
+        .figure-badge:hover {
+            background: #e8d9cb;
+            transform: scale(1.02);
+        }
+        .figure-badge i {
+            color: #b1886b;
+        }
+        /* 模态框 (轻量卡片) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(30,20,10,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-card {
+            background: #fffcf5;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 40px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 2px solid #b1886b;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem; right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #8f7b67;
+        }
+        .modal-title {
+            font-size: 2rem;
+            color: #4a3729;
+            border-bottom: 2px solid #d9c9b7;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .modal-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        .modal-footer {
+            font-size: 0.85rem;
+            color: #8f7b67;
+            border-top: 1px dashed #d9c9b7;
+            padding-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">经纬医馆</div>
+        <div class="nav-links">
+            <a href="index.html">溯源·历代医馆</a>
+            <a href="#">分脉·医筑谱系</a>
+            <a href="#">匠心·营造名家</a>
+            <a href="#">典藏·匠籍博览</a>
+        </div>
+        <div class="nav-tools">
+            <i class="fas fa-robot" title="AI讲解问答"></i>
+            <i class="fas fa-user-circle"></i>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <!-- 左侧时间轴 (从上到下：清 -> 周) -->
+        <div class="timeline-sidebar">
+            <div class="timeline-item active" data-dynasty="qing">清</div>
+            <div class="timeline-item" data-dynasty="ming">明</div>
+            <div class="timeline-item" data-dynasty="yuan">元</div>
+            <div class="timeline-item" data-dynasty="song">宋</div>
+            <div class="timeline-item" data-dynasty="suidang">隋唐</div>
+            <div class="timeline-item" data-dynasty="weijin">魏晋南北朝</div>
+            <div class="timeline-item" data-dynasty="qinhan">秦汉</div>
+            <div class="timeline-item" data-dynasty="zhou">周</div>
+        </div>
+
+        <!-- 右侧内容区域 (动态更新) -->
+        <div class="dynasty-detail" id="dynastyDetail">
+            <!-- 内容由JavaScript动态填充，此处为初始占位 -->
+        </div>
+    </div>
+
+    <!-- 模态框 (轻量卡片) -->
+    <div class="modal" id="figureModal">
+        <div class="modal-card">
+            <span class="modal-close" id="modalClose">&times;</span>
+            <div class="modal-title" id="modalTitle">人物名称</div>
+            <div class="modal-content" id="modalDesc">详细介绍</div>
+            <div class="modal-footer" id="modalFooter">来源：...</div>
+        </div>
+    </div>
+
+    <script>
+        // ---------- 朝代数据 (根据文档整理，可替换图片路径和详细文字) ----------
+        const dynastyData = {
+            qing: {
+                name: '清',
+                subtitle: '清变汇通：传统药铺嬗变与西医东渐',
+                period: '1636-1912',
+                // 图片路径请替换为实际文件
+                imageUrl: '8.清-太医院.jpg',   // 用户提供的图片
+                imageCaption: '图：清太医院署地图 / 来源：档案馆',
+                features: [
+                    '建筑特色：民间药铺广泛分布，北京太医院旧址留存，晚期出现西式医院建筑。',
+                    '重要事件：康熙年间《医宗金鉴》编纂；王清任《医林改错》重视解剖；西医医院建立。',
+                    '制度创新：传统医馆商业化，中西医汇通开始。'
+                ],
+                figures: [
+                    { name: '王清任', desc: '清代医学家，著《医林改错》，强调解剖学，革新脏腑理论。', footer: '来源：《清史稿》/后世想象图' },
+                    { name: '傅青主', desc: '傅山，博通经史，医学造诣深厚，著有《傅青主女科》。', footer: '来源：山西博物院' },
+                    { name: '《医宗金鉴》', desc: '官修医学丛书，90卷，清代医学教科书。', footer: '来源：中国国家图书馆藏' }
+                ]
+            },
+            ming: {
+                name: '明',
+                subtitle: '明鉴百草：太医院、本草集成与瘟疫防治',
+                period: '1368-1644',
+                imageUrl: '7.明朝-太医院.jpg',   // 用户提供的图片 (内容可能需替换)
+                imageCaption: '图：明代太医院布局示意 / 据《明会典》复原',
+                features: [
+                    '建筑特色：太医院位于紫禁城东南，地方惠民药局渐衰。',
+                    '重要事件：李时珍《本草纲目》成书；吴又可《温疫论》创立“戾气”学说；人痘接种推广。',
+                    '代表人物：李时珍、吴又可。'
+                ],
+                figures: [
+                    { name: '李时珍', desc: '明代本草学家，历时27年编成《本草纲目》，集本草学大成。', footer: '来源：中国国家博物馆' },
+                    { name: '吴又可', desc: '传染病学家，著《温疫论》，提出“戾气”致病说。', footer: '来源：明末刻本' }
+                ]
+            },
+            yuan: {
+                name: '元',
+                subtitle: '元融异方：广惠司与回回医药的官制',
+                period: '1271-1368',
+                imageUrl: 'images/yuan-placeholder.jpg', // 需替换为实际图片
+                imageCaption: '图：元大都遗址 / 或《饮膳正要》插图',
+                features: [
+                    '建筑特色：广惠司、回回药物院等机构，可能带有伊斯兰风格。',
+                    '重要事件：忽思慧编《饮膳正要》；中外医药在大都融合。',
+                    '相关人物：忽思慧（营养学家）。'
+                ],
+                figures: [
+                    { name: '忽思慧', desc: '元代营养学家，撰《饮膳正要》，记载宫廷饮食疗养。', footer: '来源：明刻本影印' }
+                ]
+            },
+            song: {
+                name: '宋',
+                subtitle: '宋韵药香：官办惠民药局与市井医药繁荣',
+                period: '960-1279',
+                imageUrl: 'images/song-placeholder.jpg', // 建议使用《清明上河图》局部
+                imageCaption: '图：《清明上河图》中的药铺场景（局部）/ 故宫博物院藏',
+                features: [
+                    '建筑特色：太医局（教育）、惠民和剂局（制药）分离，出现正式医馆建筑。',
+                    '重要事件：王安石变法设熟药所；《太平惠民和剂局方》；针灸铜人；《洗冤集录》。',
+                    '相关人物：苏颂、沈括、宋慈。'
+                ],
+                figures: [
+                    { name: '宋慈', desc: '法医学家，著《洗冤集录》，世界最早法医学专著。', footer: '来源：宋慈像/后世绘' },
+                    { name: '王惟一', desc: '针灸学家，设计针灸铜人，著《铜人腧穴针灸图经》。', footer: '来源：中国医史博物馆' }
+                ]
+            },
+            suidang: {
+                name: '隋唐',
+                subtitle: '唐风鼎革：太医署、药园与中外汇通',
+                period: '581-907',
+                imageUrl: 'images/tang-placeholder.jpg', // 可用《敦煌壁画医疗图》或《唐太医署复原图》
+                imageCaption: '图：敦煌壁画中的医疗场景 / 敦煌研究院',
+                features: [
+                    '建筑特色：太医署完备，下设医、针、按摩等科，并设药园。',
+                    '重要事件：624年立太医署；《新修本草》颁行；孙思邈著《千金要方》。',
+                    '相关人物：孙思邈、王焘。'
+                ],
+                figures: [
+                    { name: '孙思邈', desc: '药王，著《千金要方》《千金翼方》，集唐前医学大成。', footer: '来源：后世绘/药王像' },
+                    { name: '王焘', desc: '著《外台秘要》，整理大量唐前医方。', footer: '来源：明刻本' }
+                ]
+            },
+            weijin: {
+                name: '魏晋南北朝',
+                subtitle: '梵音慈航：寺院医疗与疫病应对',
+                period: '220-589',
+                imageUrl: '3.魏晋南北朝-永宁寺.jpg', // 用户提供的永宁寺复原图
+                imageCaption: '图：洛阳永宁寺塔基复原示意 / 据考古推测',
+                features: [
+                    '建筑特色：寺庙成为医疗救济场所（悲田养病坊前身），出现隔离病坊。',
+                    '重要事件：佛教医学传入；葛洪《肘后备急方》；陶弘景整理本草。',
+                    '相关人物：葛洪、陶弘景。'
+                ],
+                figures: [
+                    { name: '葛洪', desc: '道教医家，著《肘后备急方》，记载天花、恙虫病等。', footer: '来源：《道藏》插图' },
+                    { name: '陶弘景', desc: '本草学家，整理《神农本草经》，著《本草经集注》。', footer: '来源：明代《三才图会》' }
+                ]
+            },
+            qinhan: {
+                name: '秦汉',
+                subtitle: '汉制医章：太医署与经典理论奠基',
+                period: '前221-220',
+                imageUrl: 'images/han-placeholder.jpg', // 可使用汉画像石拓片
+                imageCaption: '图：汉画像石中的扁鹊行医图 / 山东博物馆',
+                features: [
+                    '建筑特色：出现太医令丞为首的太医署，但独立医馆形制模糊。',
+                    '重要事件：汉武帝设太医令；张仲景《伤寒杂病论》；华佗外科术。',
+                    '相关人物：张仲景、华佗。'
+                ],
+                figures: [
+                    { name: '张仲景', desc: '医圣，著《伤寒杂病论》，确立辨证论治原则。', footer: '来源：明清肖像' },
+                    { name: '华佗', desc: '外科鼻祖，发明麻沸散，创五禽戏。', footer: '来源：后世想象' }
+                ]
+            },
+            zhou: {
+                name: '周',
+                subtitle: '周礼医源：宫室官署中的制度雏形',
+                period: '前1046-前256',
+                imageUrl: '1.周室-1.jpg', // 用户提供的周原凤雏遗址图片
+                imageCaption: '图：周原凤雏宫室复原模型 / 周原博物馆',
+                features: [
+                    '建筑特色：医疗依附宫室、衙署，《周礼》载医师、疾医、疡医等官职。',
+                    '重要事件：《周礼》成书，奠定医政制度；医和、医缓诊病故事。',
+                    '相关人物：医和、医缓。'
+                ],
+                figures: [
+                    { name: '医和', desc: '春秋秦国医家，提出“六气致病”说。', footer: '来源：《左传》/后世想象' },
+                    { name: '医缓', desc: '春秋秦国医家，为晋景公诊“病入膏肓”。', footer: '来源：《左传》' }
+                ]
+            }
+        };
+
+        // 当前选中的朝代
+        let currentDynasty = 'qing';
+
+        // 获取DOM元素
+        const detailDiv = document.getElementById('dynastyDetail');
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        const modal = document.getElementById('figureModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
+        const modalFooter = document.getElementById('modalFooter');
+        const modalClose = document.getElementById('modalClose');
+
+        // 渲染右侧内容
+        function renderDynasty(dynastyKey) {
+            const data = dynastyData[dynastyKey];
+            if (!data) return;
+
+            let figuresHtml = '';
+            data.figures.forEach((fig, index) => {
+                figuresHtml += `<div class="figure-badge" data-figure="${dynastyKey}-${index}"><i class="fas fa-user-md"></i> ${fig.name}</div>`;
+            });
+
+            const html = `
+                <div class="dynasty-header">
+                    <span class="dynasty-name">${data.name}</span>
+                    <span class="dynasty-sub">${data.subtitle}</span>
+                    <span class="dynasty-period">${data.period}</span>
+                </div>
+                <div class="dynasty-row">
+                    <div class="image-area" style="background-image: url('${data.imageUrl}'); background-size: cover;">
+                        <div class="image-caption"><i class="fas fa-camera"></i> ${data.imageCaption}</div>
+                    </div>
+                    <div class="text-area">
+                        <ul class="feature-list">
+                            ${data.features.map(f => `<li><i class="fas fa-chevron-circle-right"></i> ${f}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+                <div class="figures" id="figuresContainer">
+                    ${figuresHtml}
+                </div>
+            `;
+            detailDiv.innerHTML = html;
+
+            // 为当前朝代的人物浮签绑定点击事件
+            document.querySelectorAll('.figure-badge').forEach(badge => {
+                badge.addEventListener('click', (e) => {
+                    const key = badge.dataset.figure; // 格式 "dynasty-index"
+                    const [dyn, idx] = key.split('-');
+                    const figure = dynastyData[dyn].figures[parseInt(idx)];
+                    if (figure) {
+                        modalTitle.innerText = figure.name;
+                        modalDesc.innerText = figure.desc;
+                        modalFooter.innerText = `来源：${figure.footer}`;
+                        modal.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // 切换时间轴高亮
+        function setActiveTimeline(dynastyKey) {
+            timelineItems.forEach(item => {
+                const dyn = item.dataset.dynasty;
+                if (dyn === dynastyKey) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // 初始化显示清朝
+        renderDynasty('qing');
+        setActiveTimeline('qing');
+
+        // 为时间轴添加点击事件
+        timelineItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const dyn = item.dataset.dynasty;
+                if (dyn === currentDynasty) return;
+                currentDynasty = dyn;
+                renderDynasty(dyn);
+                setActiveTimeline(dyn);
+            });
+        });
+
+        // 模态框关闭
+        modalClose.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+        });
+    </script>
+
+    <!-- 提示：请将图片文件放在与HTML相同的目录下，或修改 imageUrl 路径。具体需替换的图片已在数据中标注。 -->
+</body>
+</html>
